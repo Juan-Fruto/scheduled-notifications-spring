@@ -1,7 +1,7 @@
 package com.nativespeakerai.push_notifications.task;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
-import com.nativespeakerai.push_notifications.dto.DeviceNotificationRequest;
+import com.nativespeakerai.push_notifications.dto.MultiDevicesNotificationRequest;
 import com.nativespeakerai.push_notifications.service.NotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import javax.management.NotificationFilter;
 import java.text.SimpleDateFormat;
-import java.util.concurrent.ExecutionException;
 
 @Component
 public class NotificationTask {
@@ -20,21 +19,22 @@ public class NotificationTask {
 
     private final NotificationService notificationService;
 
+    // constructor
     public NotificationTask(NotificationService notificationService){
         this.notificationService = notificationService;
     }
 
-    @Scheduled(cron = "0 8 4 * * ?") // format = second minute hour day month day week
-    public void sendNotificationTask(){
+    @Scheduled(cron = "0 30 8 * * ?") // format = second minute hour day month day week
+    public void sendNotificationTaskAllDevices(){
         try {
-            DeviceNotificationRequest notification = new DeviceNotificationRequest();
+            MultiDevicesNotificationRequest notification = new MultiDevicesNotificationRequest();
 
-            notification.setTitle("Time to practice");
-            notification.setBody("Give you a chance to improve your english comunication");
-            notification.setDeviceToken("eyK2D7bBREaivjYahlLrYw:APA91bGPRLHNKY4fD9a3bTA339o09udpU6WNTkBkDxvzhh8fs35vwyCPTvvsbcNrU-8oN26LtqpZYqyWzujwmp02Y-QXLypG8qVLDvMCHs7fxFkyiphGPlRo652lgbId1L9dz82iZzWW");
+            notification.setTitle("Time to practice!");
+            notification.setBody("Give you a chance to improve your english communication");
+            notification.setImageUrl("https://i.postimg.cc/ncdNrCNG/ranita-reloj.jpg");
 
-            notificationService.sendNotificationToDevice(notification);
-        } catch (FirebaseMessagingException | ExecutionException | InterruptedException e) {
+            notificationService.sendMulticastNotification(notification);
+        } catch (FirebaseMessagingException e){
             e.printStackTrace();
         }
     }

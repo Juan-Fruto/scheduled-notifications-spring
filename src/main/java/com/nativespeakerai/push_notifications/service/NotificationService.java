@@ -3,14 +3,16 @@ package com.nativespeakerai.push_notifications.service;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.messaging.*;
 import com.nativespeakerai.push_notifications.dto.DeviceNotificationRequest;
-import com.nativespeakerai.push_notifications.dto.DevicesNotificationRequest;
+import com.nativespeakerai.push_notifications.dto.MultiDevicesNotificationRequest;
+import com.nativespeakerai.push_notifications.model.entity.FcmToken;
+import com.nativespeakerai.push_notifications.model.repository.FcmTokenRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -18,6 +20,8 @@ import java.util.concurrent.ExecutionException;
 public class NotificationService {
 
     private final FirebaseApp firebaseApp;
+
+    private final FcmTokenRepository fcmTokenRepository;
 
     public void sendNotificationToDevice(DeviceNotificationRequest request) throws FirebaseMessagingException, ExecutionException, InterruptedException {
         Message fcmMessage = Message.builder()
@@ -36,7 +40,7 @@ public class NotificationService {
         log.info("sendNotificationToDevice response: {}", response);
     }
 
-    public void sendMulticastNotification(DevicesNotificationRequest request) throws FirebaseMessagingException {
+    public void sendMulticastNotification(MultiDevicesNotificationRequest request) throws FirebaseMessagingException {
         MulticastMessage multicastMessage = MulticastMessage.builder()
                 .addAllTokens(request.getDeviceTokenList().isEmpty() ? getAllDeviceTokens() : request.getDeviceTokenList())
                 .setNotification(
@@ -62,9 +66,11 @@ public class NotificationService {
     }
 
     private List<String> getAllDeviceTokens() {
-        // get device tokes from User entity
-        // Return a list of device tokens
-        return new ArrayList<>();
+        List<FcmToken> fcmTokens = (List<FcmToken>) this.fcmTokenRepository.findAll();
+
+        return fcmTokens.stream()
+                .map(FcmToken::getFcmToken)
+                .collect(Collectors.toList());
     }
 
 }

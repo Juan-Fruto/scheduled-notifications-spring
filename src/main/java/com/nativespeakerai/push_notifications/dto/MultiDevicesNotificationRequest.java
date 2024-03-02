@@ -8,6 +8,6 @@ import java.util.List;
 
 @Setter
 @Getter
-public class DevicesNotificationRequest extends NotificationRequest {
+public class MultiDevicesNotificationRequest extends NotificationRequest {
     List<String> deviceTokenList = new ArrayList<>();
 }
