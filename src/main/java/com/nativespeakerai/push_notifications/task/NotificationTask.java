@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import javax.management.NotificationFilter;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 
 @Component
 public class NotificationTask {
@@ -20,12 +21,12 @@ public class NotificationTask {
     private final NotificationService notificationService;
 
     // constructor
-    public NotificationTask(NotificationService notificationService){
+    public NotificationTask(NotificationService notificationService) {
         this.notificationService = notificationService;
     }
 
-    @Scheduled(cron = "0 30 8 * * ?") // format = second minute hour day month day week
-    public void sendNotificationTaskAllDevices(){
+    @Scheduled(cron = "0 30 10 * * ?") // format = second minute hour day month day week
+    public void sendNotificationTaskAllDevices() {
         try {
             MultiDevicesNotificationRequest notification = new MultiDevicesNotificationRequest();
 
@@ -34,10 +35,9 @@ public class NotificationTask {
             notification.setImageUrl("https://i.postimg.cc/ncdNrCNG/ranita-reloj.jpg");
 
             notificationService.sendMulticastNotification(notification);
-        } catch (FirebaseMessagingException e){
+        } catch (FirebaseMessagingException e) {
             e.printStackTrace();
         }
     }
-
 }
 
